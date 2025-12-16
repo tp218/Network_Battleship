@@ -1,4 +1,8 @@
 import random
+import pygame
+
+
+pygame.init()
 
 rows = {
     "A":0, "B":1, "C":2, "D":3, "E":4, "F":5, "G":6, "H":7, "I":8, "J":9
@@ -93,7 +97,41 @@ def are_colissions(size, start_x, start_y, board, orientation):
         else:
             return False
 
+def display_board(board):
+    window_size = (600, 700)
+    window = pygame.display.set_mode(window_size)
+    pygame.display.set_caption("Battleship")
+    pygame.font.init()
+
+    running = True
+    while running:
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        x_coord = 20
+        y_coord = 100
+        # Draw shapes
+        window.fill((255, 255, 255))
+        for ship in ships:
+            font = pygame.font.SysFont('Arial', 50)
+            text_surface = font.render(f"Now Placing {ship}", False, (255,0,0))
+            window.blit(text_surface, (100, 20))
+            for row in board:
+                for i in range(len(row)):
+                    if row[i] == 0:
+                        pygame.draw.rect(window, (0, 0, 0) , (x_coord, y_coord, 50, 50), 5)
+                    else:
+                        pygame.draw.rect(window, (0, 0, 0) , (x_coord, y_coord, 50, 50))
+                    x_coord += 55
+                y_coord += 55
+                x_coord = 20
+
+        pygame.display.flip()
+    pygame.quit()
+
 generate_board()
+display_board(board_ai)
 print(board_ai)
 
 # spot = input("where would you like to hit")
