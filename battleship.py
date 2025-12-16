@@ -1,5 +1,6 @@
 import random
 import pygame
+import math
 
 
 pygame.init()
@@ -20,7 +21,7 @@ ships_sizes = {
 }
 
 board_player = [
-    [1,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -102,36 +103,67 @@ def display_board(board):
     window = pygame.display.set_mode(window_size)
     pygame.display.set_caption("Battleship")
     pygame.font.init()
+    k = 0
+    coord_1 = 0
+    coord_2 = 101010
 
     running = True
-    while running:
+    while running and k < len(ships) * 2:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+            
+                click_x, click_y = event.pos
+                grid_x = (click_x - 20) // 55
+                grid_y = (click_y - 100) // 55
+                box_x = 20 + grid_x * 55
+                box_y = 100 + grid_y * 55
+                coord_1 = (grid_x, grid_y) if k % 2 == 0 else coord_1
+                coord_2 = (grid_x, grid_y) if k % 2 == 1 else coord_2 
+                if k % 2 == 1:
+                    for i in range(ships_sizes[ships[k // 2]]):
+                        if coord_1[0] == coord_2[0]:  # vertical
+                            y_pos = coord_1[1] + i if coord_2[1] > coord_1[1] else coord_1[1] - i
+                            board_player[y_pos][coord_1[0]] = 1
+                        else:  # horizontal
+                            x_pos = coord_1[0] + i if coord_2[0] > coord_1[0] else coord_1[0] - i
+                            board_player[coord_1[1]][x_pos] = 1
+                board_player[grid_y][grid_x] = 1
+                pygame.draw.rect(window, (0, 0, 0) , (box_x, box_y, 50, 50), 5) 
+                k += 1
         x_coord = 20
         y_coord = 100
         # Draw shapes
         window.fill((255, 255, 255))
-        for ship in ships:
-            font = pygame.font.SysFont('Arial', 50)
-            text_surface = font.render(f"Now Placing {ship}", False, (255,0,0))
-            window.blit(text_surface, (100, 20))
-            for row in board:
-                for i in range(len(row)):
-                    if row[i] == 0:
-                        pygame.draw.rect(window, (0, 0, 0) , (x_coord, y_coord, 50, 50), 5)
-                    else:
-                        pygame.draw.rect(window, (0, 0, 0) , (x_coord, y_coord, 50, 50))
-                    x_coord += 55
-                y_coord += 55
-                x_coord = 20
+        
+        for row in board: 
+            for i in range(len(row)):
+                if row[i] == 0:
+                    pygame.draw.rect(window, (0, 0, 0) , (x_coord, y_coord, 50, 50), 5)
+                else:
+                    pygame.draw.rect(window, (0, 0, 0) , (x_coord, y_coord, 50, 50))
+                x_coord += 55
+            y_coord += 55
+            x_coord = 20
+        font = pygame.font.SysFont('Arial', 25)
+        print(k)
+        if k >= len(ships) * 2:
+            if k % 2 == 0:
+                text_surface = font.render(f"Now Placing {ships[k // 2 ]}: Where Should Your Ship Start", False, (255,0,0))
+            else:
+                text_surface = font.render(f"Now Placing {ships[k // 2 ]}: Chose a Second Square to Decide Orientation", False, (255,0,0))
+            window.blit(text_surface, (0, 20)) 
+
+
 
         pygame.display.flip()
     pygame.quit()
 
 generate_board()
-display_board(board_ai)
+display_board(board_player)
 print(board_ai)
 
 # spot = input("where would you like to hit")
