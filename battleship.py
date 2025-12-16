@@ -45,45 +45,51 @@ board_ai = [
 
 def generate_board():
     for ship in ships:
-        used_coordinates = []
         size = ships_sizes[ship]
         starting_x = random.randint(0, 9)
         starting_y = random.randint(0, 9)
         orientation = random.choice(["horizontal", "vertical"])
-        if are_colissions(size, starting_x, starting_y, used_coordinates, orientation):
-            while are_colissions(size, starting_x, starting_y, used_coordinates, orientation):
+        if are_colissions(size, starting_x, starting_y, board_ai, orientation):
+            while are_colissions(size, starting_x, starting_y, board_ai, orientation):
                 starting_x = random.randint(0, 9)
                 starting_y = random.randint(0, 9)
+                orientation = random.choice(["horizontal", "vertical"])
         if orientation == "horizontal":
             if starting_x + size <= 9:
                 for i in range(size):
                     board_ai[starting_y][starting_x + i] = 1
-                    used_coordinates.append(starting_x + i)
             else:
                 for i in range(size):
                     board_ai[starting_y][starting_x - i] = 1
-                    used_coordinates.append(starting_x - i)
         else:
             if starting_y + size <= 9:
                 for i in range(size):
                     board_ai[starting_y + i][starting_x] = 1
-                    used_coordinates.append(starting_y + i)
             else:
                 for i in range(size):
                     board_ai[starting_y - i][starting_x] = 1
-                    used_coordinates.append(starting_y - i)
 
-def are_colissions(size, start_x, start_y, used_coordinates, orientation):
+def are_colissions(size, start_x, start_y, board, orientation):
     if orientation == "horizontal":
-        for coord in used_coordinates:
-            if coord in range(start_x, start_x + size):
-                return True
-        else:
-            return False
+        for i in range(size):
+            if(start_x + size <= 9):
+                
+                if board[start_y][start_x + i] == 1:
+                    return True
+                
+            else: 
+                if board[start_y][start_x - i] == 1:
+                    return True
     else:
-        for coord in used_coordinates:
-            if coord in range(start_y, start_y + size):
-                return True
+        for i in range(size):
+            if(start_y + size <= 9):
+                
+                if board[start_y + i][start_x] == 1:
+                    return True
+                
+            else: 
+                if board[start_y - i][start_x] == 1:
+                    return True
         else:
             return False
 
