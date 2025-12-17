@@ -122,8 +122,11 @@ def display_board(board):
                 box_x = 20 + grid_x * 55
                 box_y = 100 + grid_y * 55
                 coord_1 = (grid_x, grid_y) if k % 2 == 0 else coord_1
-                coord_2 = (grid_x, grid_y) if k % 2 == 1 else coord_2 
-                if k % 2 == 1:
+                coord_2_valid = False
+                if(k % 2 == 1 and coord_1 != (grid_x, grid_y) and (coord_1[0] == grid_x or coord_1[1] == grid_y)):
+                    coord_2 = (grid_x, grid_y)
+                    coord_2_valid = True
+                if k % 2 == 1 and coord_2_valid:
                     for i in range(ships_sizes[ships[k // 2]]):
                         if coord_1[0] == coord_2[0]:  # vertical
                             y_pos = coord_1[1] + i if coord_2[1] > coord_1[1] else coord_1[1] - i
@@ -131,9 +134,11 @@ def display_board(board):
                         else:  # horizontal
                             x_pos = coord_1[0] + i if coord_2[0] > coord_1[0] else coord_1[0] - i
                             board_player[coord_1[1]][x_pos] = 1
-                board_player[grid_y][grid_x] = 1
-                pygame.draw.rect(window, (0, 0, 0) , (box_x, box_y, 50, 50), 5) 
-                k += 1
+                    k += 1
+                elif k % 2 == 0:
+                    board_player[grid_y][grid_x] = 1
+                    pygame.draw.rect(window, (0, 0, 0) , (box_x, box_y, 50, 50), 5) 
+                    k += 1
         x_coord = 20
         y_coord = 100
         # Draw shapes
@@ -149,12 +154,11 @@ def display_board(board):
             y_coord += 55
             x_coord = 20
         font = pygame.font.SysFont('Arial', 25)
-        print(k)
-        if k >= len(ships) * 2:
+        if k < len(ships) * 2:
             if k % 2 == 0:
-                text_surface = font.render(f"Now Placing {ships[k // 2 ]}: Where Should Your Ship Start", False, (255,0,0))
+                text_surface = font.render(f"Now Placing {ships[k // 2 ]}(Size {ships_sizes[ships[k // 2]]}): Where Should Your Ship Start", False, (255,0,0))
             else:
-                text_surface = font.render(f"Now Placing {ships[k // 2 ]}: Chose a Second Square to Decide Orientation", False, (255,0,0))
+                text_surface = font.render(f"Now Placing {ships[k // 2 ]} (Size {ships_sizes[ships[k // 2]]}): Chose a Second Square to Decide Orientation", False, (255,0,0))
             window.blit(text_surface, (0, 20)) 
 
 
