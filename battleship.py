@@ -85,6 +85,7 @@ def are_colissions(size, start_x, start_y, board, orientation):
             else: 
                 if board[start_y][start_x - i] == 1:
                     return True
+        return False
     else:
         for i in range(size):
             if(start_y + size <= 9):
@@ -95,8 +96,28 @@ def are_colissions(size, start_x, start_y, board, orientation):
             else: 
                 if board[start_y - i][start_x] == 1:
                     return True
+        return False
+
+def are_colissions_player(size, start_x, start_y, board, orientation, direction):
+    for i in range(size):
+
+        if orientation == "horizontal":
+            x_pos = start_x + i * direction
+            y_pos = start_y
         else:
-            return False
+            x_pos = start_x
+            y_pos = start_y + i * direction
+
+        # out of bounds
+        if x_pos < 0 or x_pos >= 10 or y_pos < 0 or y_pos >= 10:
+            return True
+
+        # collision with existing ship
+        if board[y_pos][x_pos] == 1:
+            return True
+
+    return False
+
 
 def display_board(board):
     window_size = (600, 700)
@@ -123,7 +144,12 @@ def display_board(board):
                 box_y = 100 + grid_y * 55
                 coord_1 = (grid_x, grid_y) if k % 2 == 0 else coord_1
                 coord_2_valid = False
-                if(k % 2 == 1 and coord_1 != (grid_x, grid_y) and (coord_1[0] == grid_x or coord_1[1] == grid_y)):
+                orientation = "horizontal" if coord_1[0] == grid_x else "vertical"
+                if orientation == "vertical":
+                    direction = 1 if grid_y > coord_1[1] else -1
+                else:
+                    direction = 1 if grid_x > coord_1[0] else -1
+                if(k % 2 == 1 and coord_1 != (grid_x, grid_y) and (coord_1[0] == grid_x or coord_1[1] == grid_y) and (not are_colissions_player(ships_sizes[ships[k // 2]], coord_1[0], coord_1[1], board_player, orientation, direction))):
                     coord_2 = (grid_x, grid_y)
                     coord_2_valid = True
                 if k % 2 == 1 and coord_2_valid:
@@ -136,7 +162,7 @@ def display_board(board):
                             board_player[coord_1[1]][x_pos] = 1
                     k += 1
                 elif k % 2 == 0:
-                    board_player[grid_y][grid_x] = 1
+                    board_player[grid_y][grid_x] = 11
                     pygame.draw.rect(window, (0, 0, 0) , (box_x, box_y, 50, 50), 5) 
                     k += 1
         x_coord = 20
@@ -148,7 +174,7 @@ def display_board(board):
             for i in range(len(row)):
                 if row[i] == 0:
                     pygame.draw.rect(window, (0, 0, 0) , (x_coord, y_coord, 50, 50), 5)
-                else:
+                elif row[i] == 1 or row[i] == 11:
                     pygame.draw.rect(window, (0, 0, 0) , (x_coord, y_coord, 50, 50))
                 x_coord += 55
             y_coord += 55
