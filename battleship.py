@@ -34,6 +34,19 @@ board_player = [
     
 ]
 
+board_player_guesses = [
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0]
+]
+
 board_ai = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -46,6 +59,19 @@ board_ai = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0]
     
+]
+
+board_ai_guesses = [
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0]
 ]
 
 def generate_board():
@@ -149,7 +175,7 @@ def display_board(board):
                     direction = 1 if grid_y > coord_1[1] else -1
                 else:
                     direction = 1 if grid_x > coord_1[0] else -1
-                if(k % 2 == 1 and coord_1 != (grid_x, grid_y) and (coord_1[0] == grid_x or coord_1[1] == grid_y) and (not are_colissions_player(ships_sizes[ships[k // 2]], coord_1[0], coord_1[1], board_player, orientation, direction))):
+                if(k % 2 == 1 and coord_1 != (grid_x, grid_y) and (coord_1[0] == grid_x or coord_1[1] == grid_y)):
                     coord_2 = (grid_x, grid_y)
                     coord_2_valid = True
                 if k % 2 == 1 and coord_2_valid:
@@ -192,9 +218,60 @@ def display_board(board):
         pygame.display.flip()
     pygame.quit()
 
+def play_game():
+    window_size = (1200, 700)
+    window = pygame.display.set_mode(window_size)
+    pygame.display.set_caption("Battleship")
+    pygame.font.init()
+    k = 0
+    coord_1 = 0
+    coord_2 = 101010
+
+    running = True
+    while running and k < len(ships) * 2:
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        x_coord = 20
+        y_coord = 100
+        # Draw shapes
+        window.fill((255, 255, 255))
+        
+        for row in board_player: 
+            for i in range(len(row)):
+                if row[i] == 0:
+                    pygame.draw.rect(window, (0, 0, 0) , (x_coord, y_coord, 50, 50), 5)
+                elif row[i] == 1 or row[i] == 11:
+                    pygame.draw.rect(window, (0, 0, 0) , (x_coord, y_coord, 50, 50))
+                x_coord += 55
+            y_coord += 55
+            x_coord = 20
+        pygame.draw.line(window, (0, 0, 0), (window_size[0]/2 - 7.5, 0), (window_size[0]/2 - 7.5, window_size[1]), 5)
+        font = pygame.font.SysFont('Arial', 25)
+        text_surface = font.render("Your Board", False, (255,0,0))
+        window.blit(text_surface, (50, 20))
+        text_surface_ai = font.render("Your Guesses", False, (255,0,0))
+        window.blit(text_surface_ai, (window_size[0]/2 + 50, 20))
+        y_coord = 100
+        for row in board_player_guesses: 
+            for i in range(len(row)):
+                if row[i] == 0:
+                    pygame.draw.rect(window, (0, 0, 0) , (x_coord + window_size[0]/2, y_coord, 50, 50), 5)
+                x_coord += 55
+            y_coord += 55
+            x_coord = 20
+                
+
+
+
+        pygame.display.flip()
+    pygame.quit()
+
 generate_board()
 display_board(board_player)
 print(board_ai)
+play_game()
 
 # spot = input("where would you like to hit")
 # hit_spot = board_ai[rows[spot[0]]][int(spot[1]) - 1]
