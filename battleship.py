@@ -237,6 +237,16 @@ def play_game():
         y_coord = 100
         # Draw shapes
         window.fill((255, 255, 255))
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            
+            click_x, click_y = event.pos
+            grid_x = int((click_x - 20 - (window_size[0]/2)) // 55)
+            grid_y = (click_y - 100) // 55
+            if board_ai[grid_y][grid_x] == 1:
+                board_player_guesses[grid_y][grid_x] = 3
+            else:
+                board_player_guesses[grid_y][grid_x] = 2
         
         for row in board_player: 
             for i in range(len(row)):
@@ -258,6 +268,10 @@ def play_game():
             for i in range(len(row)):
                 if row[i] == 0:
                     pygame.draw.rect(window, (0, 0, 0) , (x_coord + window_size[0]/2, y_coord, 50, 50), 5)
+                elif row[i] == 2:
+                    pygame.draw.rect(window, (0, 0, 255) , (x_coord + window_size[0]/2, y_coord, 50, 50))
+                elif row[i] == 3:
+                    pygame.draw.rect(window, (255, 0, 0) , (x_coord + window_size[0]/2, y_coord, 50, 50))              
                 x_coord += 55
             y_coord += 55
             x_coord = 20
@@ -272,17 +286,4 @@ generate_board()
 display_board(board_player)
 print(board_ai)
 play_game()
-
-# spot = input("where would you like to hit")
-# hit_spot = board_ai[rows[spot[0]]][int(spot[1]) - 1]
-# if hit_spot == 1:
-#     print("hit")
-# else:
-#     print("miss")
-
-# hitspot_ai = board_player[rows[random.choice(row_keys)]][random.randint(0,9)]
-# if hitspot_ai == 1:
-#     print("AI hit your ship!")
-# else:
-#     print("AI missed!")
     
